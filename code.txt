@@ -1,0 +1,92 @@
+import asyncio
+import logging
+import sqlite3
+
+from aiogram import Bot, Dispatcher
+from aiogram.types import Message
+from aiogram.filters import CommandStart, Command
+import aiogram
+
+from Closed_files.config import token
+
+# Initialize bot and dispatcher
+bot = Bot(token=token)
+dp = Dispatcher()
+
+# Connect to SQLite database
+connect = sqlite3.connect('Closed_files/tasks.db')
+cursor = connect.cursor()
+
+# Create tasks table if it doesn't exist
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS tasks(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INT,
+        task TEXT
+    )
+''')
+connect.commit()
+
+
+# Start command handler
+"""@dp.message(CommandStart())
+async def start(message: Message):
+    await message.answer(f'Привет {message.from_user.first_name}, я бот 🤖 для управления твоими задачами.')
+    await message.answer('Вот список команд: /add ➕, /view 👀, /delete 🗑')"""
+
+
+@dp.message(CommandStart())
+async def start(message: Message):
+    logging.info(f"Received /start from {message.from_user.id}")
+    await message.answer(f'Привет {message.from_user.first_name}, я бот 🤖 для управления твоими задачами.')
+
+@dp.message(Command('/add'))
+async def add_(message: Message):
+    logging.info(f"Received /add from {message.from_user.id}")
+    task_text = message.text.replace('/add', '').strip()
+
+    if task_text:
+        user_id = message.from_user.id
+        cursor.execute('INSERT INTO tasks (user_id, task) VALUES (?, ?)', (user_id, task_text))
+        connect.commit()
+        await message.answer(f'Задача "{task_text}" добавлена!')
+    else:
+        await message.answer('Пожалуйста, укажите задачу после команды /add.')
+
+
+
+
+
+
+# Add task command handler
+"""@dp.message(Command('/add'))
+async def add(message: Message):
+    # Remove the /add part from the message
+    await message.answer('Ok')
+    task_text = message.text.replace('/add', '').strip()
+
+    if task_text:
+        # Insert task into the database
+        user_id = message.from_user.id
+        cursor.execute('INSERT INTO tasks (user_id, task) VALUES (?, ?)', (user_id, task_text))
+        connect.commit()
+
+        await message.answer(f'Задача "{task_text}" добавлена!')
+    else:
+        await message.answer('Пожалуйста, укажите задачу после команды /add.')"""
+
+
+# Main polling function
+async def main():
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("Exit")
+    except aiogram.exceptions.TelegramNetworkError:
+        print("Network error occurred.")

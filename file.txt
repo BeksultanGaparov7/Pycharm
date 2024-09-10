@@ -1,0 +1,47 @@
+import asyncio
+import logging
+
+
+from aiogram import Bot, Dispatcher, F
+from aiogram.types import Message
+from aiogram.filters import Command, CommandStart
+import aiogram
+
+from Closed_files.config import token
+
+import sqlite3
+
+
+bot = Bot(token=token)
+dp = Dispatcher()
+
+
+# Connect to SQLite database
+connect = sqlite3.connect('Closed_files/tasks.db')
+cursor = connect.cursor()
+
+@dp.message(CommandStart())
+async def start_bot(message: Message):
+    await message.answer(f'Привет {message.from_user.first_name}, я бот 🤖 для управления твоими задачами.')
+    await message.answer('Вот список команд: /add ➕, /view 👀, /delete 🗑')
+
+
+@dp.message(Command('add'))
+
+@dp.message()
+async def echo(message: Message):
+    await message.answer("Я вас не понял")
+
+async def main():
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("Exit")
+    except aiogram.exceptions.TelegramNetworkError:
+        print("Network error occurred.")

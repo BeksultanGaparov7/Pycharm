@@ -1,9 +1,9 @@
 import asyncio
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message
-from aiogram.filters import Command, CommandStart
+from aiogram.filters import CommandStart
 import logging
-from config import token
+from Closed_files.config import token
 from random import randint
 
 bot = Bot(token=token)
