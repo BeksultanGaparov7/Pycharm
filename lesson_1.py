@@ -3,8 +3,9 @@ from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart
 import logging
-from Closed_files.config import token
+#from Closed_files.config import token
 from random import randint
+token = '7390491948:AAHmgJOQplH4i0I1rt1zpJghzdiqF1bhFmg'
 
 bot = Bot(token=token)
 dp = Dispatcher()
