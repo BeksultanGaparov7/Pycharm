@@ -45,3 +45,7 @@ if __name__ == "__main__":
         print("Exit")
     except aiogram.exceptions.TelegramNetworkError:
         print("Network error occurred.")
+
+
+
+11.09.24
